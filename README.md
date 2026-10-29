@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Virtual AI Tutor
 
 An AI-powered learning support web application that lets students ask questions, practise subject-based quizzes, view quiz scores, and receive learning recommendations with useful study resources.
@@ -116,3 +117,6 @@ The current recommendation classifier is a demonstration model trained on a smal
 ## Acknowledgements
 
 Built as a student hackathon project to demonstrate AI-assisted learning, quiz-based practice, and ML-driven study recommendations.
+=======
+# virtual-ai-tutor
+>>>>>>> b8dbae0563224aa9a10f0f6840865cf2545269aa
