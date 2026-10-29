@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual AI Tutor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        :root {
+            --primary: #5b4bdb;
+            --secondary: #7968f0;
+            --bg: #f5f6ff;
+            --text: #24243a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 16px 7%;
+            background: white;
+            box-shadow: 0 2px 12px #0000000c;
+        }
+
+        nav strong { color: var(--primary); font-size: 21px; }
+
+        nav a {
+            margin-left: 18px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        header {
+            text-align: center;
+            padding: 65px 20px;
+            color: white;
+            background: linear-gradient(120deg, #5545ce, #9284ff);
+        }
+
+        header h1 { font-size: clamp(30px, 5vw, 48px); margin: 0 0 12px; }
+        header p { max-width: 650px; margin: 0 auto 22px; }
+
+        main { max-width: 1050px; margin: auto; padding: 25px 18px; }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .feature, .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 15px;
+            box-shadow: 0 4px 18px #25204d0b;
+        }
+
+        .feature h3 { color: var(--primary); margin-top: 0; }
+
+        .panel { margin-bottom: 25px; }
+        .panel h2 { margin-top: 0; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 14px 0 6px;
+        }
+
+        input, select, textarea {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d8d7e8;
+            border-radius: 8px;
+            font: inherit;
+            background: white;
+        }
+
+        textarea { min-height: 100px; resize: vertical; }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover { background: #4032b5; }
+        button:disabled { opacity: .6; cursor: wait; }
+
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f0efff;
+            border-radius: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .question-card {
+            border: 1px solid #e4e2f4;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 15px 0;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-weight: normal;
+        }
+
+        .option input { width: auto; margin-top: 7px; }
+        .muted { color: #66647b; font-size: 14px; }
+        .resource-list li { margin: 10px 0; }
+        .resource-list a { color: var(--primary); }
+        .hidden { display: none; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f5f3ff, #ffffff);
+            border: 1px solid #e5e1ff;
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .stat-card span { display: block; color: #66647b; font-size: 13px; }
+        .stat-card strong { display: block; color: var(--primary); font-size: 28px; }
+        .progress-track {
+            height: 12px; overflow: hidden; background: #e8e6f5;
+            border-radius: 99px; margin: 12px 0;
+        }
+        .progress-fill {
+            height: 100%; width: 0; background: linear-gradient(90deg, #5b4bdb, #9284ff);
+            border-radius: 99px; transition: width .3s ease;
+        }
+        .history-list { padding-left: 20px; }
+        .history-list li { margin: 8px 0; }
+        .small-button { margin-top: 8px; padding: 8px 12px; font-size: 13px; }
+        @media (max-width: 600px) {
+            nav { gap: 10px; }
+            nav a { margin-left: 8px; }
+            header { padding: 45px 18px; }
+            .feature, .panel { padding: 18px; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #66647b;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <strong>Virtual AI Tutor</strong>
+        <div>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#tutor">AI Tutor</a>
+            <a href="#quiz">Quiz</a>
+            <a href="#learning-plan">Learning Plan</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Learn Smarter with AI</h1>
+        <p>
+            Ask questions, test your knowledge, track your quiz scores,
+            and discover learning resources suited to your performance.
+        </p>
+        <a href="#tutor">
+            <button type="button">Start Learning</button>
+        </a>
+    </header>
+
+    <main>
+        <section class="panel" id="dashboard">
+            <h2>Your Learning Dashboard</h2>
+            <p class="muted">Your quiz progress is saved in this browser on this device.</p>
+            <div class="dashboard-grid">
+                <div class="stat-card"><span>Quiz attempts</span><strong id="stat-attempts">0</strong></div>
+                <div class="stat-card"><span>Best score</span><strong id="stat-best">0%</strong></div>
+                <div class="stat-card"><span>Latest score</span><strong id="stat-latest">—</strong></div>
+            </div>
+            <p><strong>Progress toward 100%</strong></p>
+            <div class="progress-track" role="progressbar" aria-label="Best quiz score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <h3>Recent quiz results</h3>
+            <ul id="quiz-history" class="history-list"><li>No quiz attempts yet. Start a quiz below.</li></ul>
+            <button type="button" id="clear-history-button" class="small-button">Clear Progress History</button>
+        </section>
+
+        <section class="features">
+            <div class="feature">
+                <h3>AI Tutor</h3>
+                <p>Get explanations for your questions in simple language.</p>
+            </div>
+            <div class="feature">
+                <h3>Smart Quiz</h3>
+                <p>Practise Python, Artificial Intelligence, and Machine Learning.</p>
+            </div>
+            <div class="feature">
+                <h3>Learning Recommendations</h3>
+                <p>Get study suggestions based on your quiz score.</p>
+            </div>
+        </section>
+
+        <section class="panel" id="tutor">
+            <h2>Ask Your AI Tutor</h2>
+            <p class="muted">Ask a question and choose your learning level.</p>
+
+            <form id="tutor-form">
+                <label for="tutor-question">Your question</label>
+                <textarea id="tutor-question"
+                    placeholder="Example: What is machine learning?"
+                    required></textarea>
+
+                <label for="tutor-level">Learning level</label>
+                <select id="tutor-level">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+
+                <button id="ask-button" type="submit">Ask AI Tutor</button>
+            </form>
+
+            <div id="tutor-result" class="result hidden" aria-live="polite"></div>
+        </section>
+
+        <section class="panel" id="quiz">
+            <h2>Knowledge Quiz</h2>
+            <p class="muted">Choose a subject and answer the questions.</p>
+
+            <label for="quiz-subject">Choose your quiz subject</label>
+            <select id="quiz-subject">
+                <option value="all">All Subjects</option>
+                <option value="Python">Python</option>
+                <option value="AI">Artificial Intelligence</option>
+                <option value="Machine Learning">Machine Learning</option>
+            </select>
+
+            <button type="button" id="start-quiz-button">Start Quiz</button>
+
+            <form id="quiz-form" class="hidden">
+                <div id="quiz-questions"></div>
+                <button id="submit-quiz-button" type="submit">Submit Answers</button>
+            </form>
+
+            <div id="quiz-result" class="result hidden" aria-live="polite"></div>
+        </section>
+
+        <section class="panel" id="learning-plan">
+            <h2>Your Personal Learning Plan</h2>
+            <p class="muted">
+                Get a suggested next step and useful study links based on your score.
+            </p>
+
+            <form id="recommend-form">
+                <label for="student-score">Quiz score (0–100)</label>
+                <input type="number" id="student-score" min="0" max="100"
+                    value="60" required>
+
+                <label for="attempts-completed">Number of quiz attempts</label>
+                <input type="number" id="attempts-completed" min="1"
+                    value="1" required>
+
+                <button id="recommend-button" type="submit">
+                    Get Learning Plan
+                </button>
+            </form>
+
+            <div id="recommend-result" class="result hidden" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <footer>
+        Virtual AI Tutor | Built with Python, FastAPI, Transformers and Scikit-learn
+    </footer>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tutorForm = document.getElementById("tutor-form");
+        const tutorQuestion = document.getElementById("tutor-question");
+        const tutorLevel = document.getElementById("tutor-level");
+        const tutorResult = document.getElementById("tutor-result");
+        const askButton = document.getElementById("ask-button");
+
+        const quizSubject = document.getElementById("quiz-subject");
+        const startQuizButton = document.getElementById("start-quiz-button");
+        const quizForm = document.getElementById("quiz-form");
+        const quizQuestions = document.getElementById("quiz-questions");
+        const quizResult = document.getElementById("quiz-result");
+        const submitQuizButton = document.getElementById("submit-quiz-button");
+
+        const scoreInput = document.getElementById("student-score");
+        const attemptsInput = document.getElementById("attempts-completed");
+        const recommendForm = document.getElementById("recommend-form");
+        const recommendResult = document.getElementById("recommend-result");
+        const recommendButton = document.getElementById("recommend-button");
+
+        let currentQuestions = [];
+        let attemptsCompleted = 0;
+        const HISTORY_KEY = "virtualAiTutorQuizHistory";
+
+        function loadHistory() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+                return Array.isArray(saved) ? saved : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function renderDashboard() {
+            const history = loadHistory();
+            const attemptsEl = document.getElementById("stat-attempts");
+            const bestEl = document.getElementById("stat-best");
+            const latestEl = document.getElementById("stat-latest");
+            const progressFill = document.getElementById("progress-fill");
+            const progressTrack = document.getElementById("progress-track");
+            const historyList = document.getElementById("quiz-history");
+
+            const best = history.length
+                ? Math.max(...history.map(item => Number(item.percentage) || 0))
+                : 0;
+            const latest = history.length ? Number(history[0].percentage) || 0 : null;
+
+            attemptsEl.textContent = String(history.length);
+            bestEl.textContent = best + "%";
+            latestEl.textContent = latest === null ? "—" : latest + "%";
+            progressFill.style.width = best + "%";
+            progressTrack.setAttribute("aria-valuenow", String(best));
+
+            historyList.replaceChildren();
+            if (!history.length) {
+                addText(historyList, "li", "No quiz attempts yet. Start a quiz below.");
+                return;
+            }
+
+            history.slice(0, 5).forEach(function (item) {
+                const label = (item.subject || "Quiz") + ": " +
+                    item.score + "/" + item.total + " (" + item.percentage + "%)";
+                addText(historyList, "li", label);
+            });
+        }
+
+        function saveQuizResult(data) {
+            const history = loadHistory();
+            history.unshift({
+                subject: quizSubject.value,
+                score: Number(data.score) || 0,
+                total: Number(data.total) || 0,
+                percentage: Number(data.percentage) || 0,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 50)));
+            renderDashboard();
+        }
+
+        async function readResponse(response) {
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || data.message || "Request failed.");
+            }
+            return data;
+        }
+
+        function showError(element, error) {
+            element.replaceChildren();
+            const message = document.createElement("p");
+            message.textContent = "Error: " + error.message;
+            element.appendChild(message);
+            element.classList.remove("hidden");
+        }
+
+        function addText(parent, tag, text) {
+            const element = document.createElement(tag);
+            element.textContent = text;
+            parent.appendChild(element);
+            return element;
+        }
+
+        renderDashboard();
+
+        document.getElementById("clear-history-button").addEventListener("click", function () {
+            if (confirm("Clear all saved quiz progress on this browser?")) {
+                localStorage.removeItem(HISTORY_KEY);
+                renderDashboard();
+            }
+        });
+
+        // AI Tutor
+        tutorForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            askButton.disabled = true;
+            askButton.textContent = "Thinking...";
+            tutorResult.classList.remove("hidden");
+            tutorResult.textContent = "Generating your answer...";
+
+            try {
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question: tutorQuestion.value.trim(),
+                        level: tutorLevel.value
+                    })
+                });
+
+                const data = await readResponse(response);
+                tutorResult.replaceChildren();
+                addText(tutorResult, "h3", "Tutor's Answer");
+                addText(tutorResult, "p", data.answer || "No answer returned.");
+            } catch (error) {
+                showError(tutorResult, error);
+            } finally {
+                askButton.disabled = false;
+                askButton.textContent = "Ask AI Tutor";
+            }
+        });
+
+        // Load a quiz for the selected subject
+        startQuizButton.addEventListener("click", async function () {
+            startQuizButton.disabled = true;
+            startQuizButton.textContent = "Loading Quiz...";
+            quizResult.classList.add("hidden");
+            quizQuestions.replaceChildren();
+            quizForm.classList.add("hidden");
+
+            const subject = quizSubject ? quizSubject.value : "all";
+
+            try {
+                const response = await fetch(
+                    "/quiz?subject=" + encodeURIComponent(subject)
+                );
+                const data = await readResponse(response);
+                currentQuestions = data.questions || [];
+
+                if (currentQuestions.length === 0) {
+                    throw new Error(
+                        "No questions found for this subject. Check quiz.py topic names."
+                    );
+                }
+
+                currentQuestions.forEach(function (question, index) {
+                    const card = document.createElement("div");
+                    card.className = "question-card";
+
+                    addText(card, "h3", (index + 1) + ". " + question.question);
+
+                    if (question.topic) {
+                        addText(card, "p", "Topic: " + question.topic);
+                    }
+
+                    const options = question.options || [];
+
+                    options.forEach(function (option, optionIndex) {
+                        const label = document.createElement("label");
+                        label.className = "option";
+
+                        const radio = document.createElement("input");
+                        radio.type = "radio";
+                        radio.name = "question-" + question.id;
+                        radio.required = true;
+
+                        // Supports either text options or {value, label} options.
+                        const optionValue = typeof option === "object"
+                            ? (option.value ?? option.label)
+                            : option;
+
+                        const optionLabel = typeof option === "object"
+                            ? (option.label ?? option.value)
+                            : option;
+
+                        radio.value = String(optionValue);
+                        radio.id = "q-" + question.id + "-o-" + optionIndex;
+
+                        label.htmlFor = radio.id;
+                        label.appendChild(radio);
+                        label.appendChild(document.createTextNode(" " + optionLabel));
+                        card.appendChild(label);
+                    });
+
+                    quizQuestions.appendChild(card);
+                });
+
+                quizForm.classList.remove("hidden");
+                quizResult.classList.add("hidden");
+                quizForm.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (error) {
+                showError(quizResult, error);
+            } finally {
+                startQuizButton.disabled = false;
+                startQuizButton.textContent = "Start Quiz";
+            }
+        });
+
+        // Submit quiz answers
+        quizForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            submitQuizButton.disabled = true;
+            submitQuizButton.textContent = "Checking Answers...";
+
+            const answers = {};
+
+            currentQuestions.forEach(function (question) {
+                const selected = quizForm.querySelector(
+                    'input[name="question-' + question.id + '"]:checked'
+                );
+                if (selected) {
+                    answers[question.id] = selected.value;
+                }
+            });
+
+            try {
+                const response = await fetch("/quiz/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ answers: answers })
+                });
+
+                const data = await readResponse(response);
+                quizResult.replaceChildren();
+                quizResult.classList.remove("hidden");
+
+                addText(quizResult, "h3", "Your Quiz Results");
+                addText(quizResult, "p", "Score: " + data.score + " / " + data.total);
+                addText(quizResult, "p", "Percentage: " + data.percentage + "%");
+
+                attemptsCompleted += 1;
+                scoreInput.value = data.percentage;
+                attemptsInput.value = attemptsCompleted;
+                saveQuizResult(data);
+
+                if (data.topic_results) {
+                    addText(quizResult, "h4", "Topic Performance");
+                    const list = document.createElement("ul");
+
+                    Object.entries(data.topic_results).forEach(function ([topic, result]) {
+                        const item = document.createElement("li");
+                        item.textContent = topic + ": " +
+                            (typeof result === "object"
+                                ? JSON.stringify(result)
+                                : result);
+                        list.appendChild(item);
+                    });
+
+                    quizResult.appendChild(list);
+                }
+
+                await generateRecommendation();
+                quizResult.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (error) {
+                showError(quizResult, error);
+            } finally {
+                submitQuizButton.disabled = false;
+                submitQuizButton.textContent = "Submit Answers";
+            }
+        });
+
+        // Learning recommendation and resource links
+        async function generateRecommendation() {
+            recommendButton.disabled = true;
+            recommendButton.textContent = "Creating Plan...";
+            recommendResult.classList.remove("hidden");
+            recommendResult.textContent = "Preparing your learning plan...";
+
+            try {
+                const response = await fetch("/recommend", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        score: Number(scoreInput.value),
+                        attempts: Number(attemptsInput.value)
+                    })
+                });
+
+                const data = await readResponse(response);
+                recommendResult.replaceChildren();
+                addText(recommendResult, "h3", "Recommended Next Step");
+                addText(recommendResult, "p", data.recommendation);
+
+                if (data.resources && data.resources.length > 0) {
+                    addText(recommendResult, "h4", "Recommended Study Resources");
+                    const list = document.createElement("ul");
+                    list.className = "resource-list";
+
+                    data.resources.forEach(function (resource) {
+                        const item = document.createElement("li");
+                        const link = document.createElement("a");
+                        link.href = resource.url;
+                        link.textContent = resource.title;
+                        link.target = "_blank";
+                        link.rel = "noopener noreferrer";
+                        item.appendChild(link);
+                        list.appendChild(item);
+                    });
+
+                    recommendResult.appendChild(list);
+                }
+
+                recommendResult.classList.remove("hidden");
+            } catch (error) {
+                showError(recommendResult, error);
+            } finally {
+                recommendButton.disabled = false;
+                recommendButton.textContent = "Get Learning Plan";
+            }
+        }
+
+        recommendForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            await generateRecommendation();
+        });
+    });
+    </script>
+</body>
+</html>
